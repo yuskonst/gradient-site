@@ -202,17 +202,21 @@
   .cap p{color:var(--muted);font-size:15px}
 
   /* process / descent */
-  .descent{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+  .descent{display:grid;grid-template-columns:repeat(6,1fr);gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
   .step{padding:32px 26px;border-right:1px solid var(--line);position:relative;transition:background .4s}
+  .step{grid-column:span 2}
+  .step:nth-child(4),.step:nth-child(5){grid-column:span 3;border-top:1px solid var(--line)}
+  .step:nth-child(3){border-right:none}
   .step:last-child{border-right:none}
   .step:hover{background:#f4f8fe}
   .step .lvl{font-family:var(--mono);font-size:12px;color:var(--muted-2);margin-bottom:22px}
   .step .lvl .bar{display:block;height:4px;border-radius:3px;margin-top:10px;
     background:linear-gradient(90deg,var(--navy),var(--blue),var(--cyan))}
   .step:nth-child(1) .bar{width:100%}
-  .step:nth-child(2) .bar{width:68%}
-  .step:nth-child(3) .bar{width:38%}
-  .step:nth-child(4) .bar{width:14%}
+  .step:nth-child(2) .bar{width:80%}
+  .step:nth-child(3) .bar{width:60%}
+  .step:nth-child(4) .bar{width:40%}
+  .step:nth-child(5) .bar{width:20%}
   .step h3{font-family:var(--display);font-weight:600;font-size:19px;margin-bottom:10px;letter-spacing:-.3px}
   .step p{color:var(--muted);font-size:14.5px}
 
@@ -256,7 +260,8 @@
     .nav-links{display:none}
     .caps{grid-template-columns:1fr}
     .descent{grid-template-columns:1fr 1fr}
-    .step{border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .step,.step:nth-child(4),.step:nth-child(5){grid-column:auto;border-top:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+    .step:nth-child(even){border-right:none}
     .stats{grid-template-columns:1fr;gap:42px}
     .section{padding:72px 0}
     .cl-row{justify-content:center}
@@ -264,6 +269,7 @@
   @media(max-width:560px){
     .descent{grid-template-columns:1fr}
     .step:nth-child(odd){border-right:none}
+    .step:nth-child(even){border-right:none}
     .hero-cta .btn{flex:1;justify-content:center}
     .wrap{padding:0 20px}
   }
@@ -295,8 +301,9 @@
         <a href="#caps">Направления</a>
         <a href="#process">Метод</a>
         <a href="#results">Результаты</a>
+        <a href="#contact">Контакты</a>
       </div>
-      <button class="btn btn-primary reveal" style="--d:160ms" onclick="document.getElementById('contact').scrollIntoView()">Обсудить задачу</button>
+      <button class="btn btn-primary reveal" style="--d:160ms" onclick="document.getElementById('contact').scrollIntoView()">Связаться с нами</button>
     </nav>
   </div>
 </header>
@@ -308,16 +315,13 @@
       <div class="hero-copy">
         <span class="eyebrow reveal" style="--d:240ms"><span class="dot"></span>МЕДИА · IT · B2B / B2G</span>
         <h1>
-          <span class="line clip" style="--d:340ms">Медиа без догадок.</span>
-          <span class="line clip" style="--d:480ms"><span class="accent">Решения — по данным.</span></span>
+          <span class="line clip" style="--d:340ms">Строим вектор наискорейшего роста.</span>
+          <span class="line clip" style="--d:480ms"><span class="accent">Для вашего бизнеса.</span></span>
         </h1>
         <p class="lede reveal" style="--d:640ms">
-          Собираем медиаплан, ведём размещение и наводим порядок в отчётности.
-          <b>Вы видите, куда уходит бюджет и что он приносит.</b>
+          Консультируем, изучаем инфраструктуру и текущие риски вашего бизнеса.
+          <b>Оптимизируем и улучшаем бизнес-процессы.</b>
         </p>
-        <div class="hero-cta reveal" style="--d:760ms">
-          <button class="btn btn-primary" onclick="document.getElementById('contact').scrollIntoView()">Обсудить проект →</button>
-        </div>
         <div class="trust reveal" style="--d:880ms">
           <span><b>B2B·B2G</b>сегменты</span>
         </div>
@@ -362,19 +366,19 @@
     </div>
     <div class="caps">
       <div class="cap reveal" style="--d:0ms">
-        <div class="num"><b>∇01</b>&nbsp;/&nbsp;медиа</div>
-        <h3>Медиапланирование</h3>
-        <p>Подбираем каналы и считаем бюджет до старта. ТВ, digital, наружная реклама, радио и спецпроекты — только там, где они решают задачу.</p>
+        <div class="num"><b>∇01</b>&nbsp;/&nbsp;it</div>
+        <h3>IT-разработка</h3>
+        <p>Разрабатываем и дорабатываем цифровые сервисы, которые поддерживают рабочие процессы компании. Фиксируем логику, интеграции и требования к данным до начала реализации.</p>
       </div>
       <div class="cap reveal" style="--d:120ms">
-        <div class="num"><b>∇02</b>&nbsp;/&nbsp;флайт</div>
-        <h3>Медиасопровождение</h3>
-        <p>Следим за выходами, ставками и расходами. Если канал не работает как ожидалось, меняем план по ходу кампании и объясняем почему.</p>
+        <div class="num"><b>∇02</b>&nbsp;/&nbsp;ai</div>
+        <h3>AI-интеграция</h3>
+        <p>Встраиваем модели и инструменты искусственного интеллекта в существующий контур работы. Проверяем качество данных, сценарии применения и способ контроля результатов.</p>
       </div>
       <div class="cap reveal" style="--d:240ms">
-        <div class="num"><b>∇03</b>&nbsp;/&nbsp;it</div>
-        <h3>IT и автоматизация</h3>
-        <p>Связываем CRM и рекламные кабинеты, собираем дашборды, убираем ручные таблицы. Команда тратит время на решения, а не на копирование цифр.</p>
+        <div class="num"><b>∇03</b>&nbsp;/&nbsp;медиа</div>
+        <h3>Медиасопровождение</h3>
+        <p>Ведем размещения и собираем данные о ходе кампаний в едином рабочем контуре. Отслеживаем договоренности, статусы и изменения, чтобы сохранить прозрачность процесса.</p>
       </div>
     </div>
   </div>
@@ -385,29 +389,34 @@
   <div class="wrap">
     <div class="sec-head reveal">
       <span class="sec-tag">Метод</span>
-      <h2>Сначала считаем, потом запускаем</h2>
-      <p>Не обещаем идеальный план с первой попытки. Проверяем данные, смотрим на результат и корректируем размещение там, где это действительно нужно.</p>
+      <h2>Сначала анализируем, потом запускаем</h2>
+      <p>Не даём обещаний, моделируем и предоставляем прогноз влияния нового бизнес-процесса на экономические результаты бизнеса.</p>
     </div>
     <div class="descent">
       <div class="step reveal" style="--d:0ms">
-        <div class="lvl">CPM · старт<span class="bar"></span></div>
-        <h3>Бриф и замер</h3>
-        <p>Разбираемся в продукте, аудитории и ограничениях. Записываем исходные показатели, чтобы потом сравнивать результат с фактом.</p>
+        <div class="lvl">этап · 01<span class="bar"></span></div>
+        <h3>Консультация</h3>
+        <p>Погружаемся в ваш бизнес-процесс, совместно с заказчиком ищем ответ на вопрос «что действительно можно оптимизировать и улучшить?»</p>
       </div>
       <div class="step reveal" style="--d:100ms">
-        <div class="lvl">CPM · падает<span class="bar"></span></div>
-        <h3>Стратегия и микс</h3>
-        <p>Сравниваем каналы, распределяем бюджет, прогнозируем охват и стоимость контакта. Показываем расчёт без чёрного ящика.</p>
+        <div class="lvl">этап · 02<span class="bar"></span></div>
+        <h3>Построение стратегии</h3>
+        <p>Формируем план работ с измеримыми сроками и направляем коммерческое предложение.</p>
       </div>
       <div class="step reveal" style="--d:200ms">
-        <div class="lvl">CPM · ниже<span class="bar"></span></div>
-        <h3>Запуск и сопровождение</h3>
-        <p>Берём на себя закупку, трафик, контроль выходов и документы. Вы получаете понятный статус без погони за несколькими подрядчиками.</p>
+        <div class="lvl">этап · 03<span class="bar"></span></div>
+        <h3>Заключение договора</h3>
+        <p>Подписываем соглашение о сотрудничестве, при этом остаемся на связи. Всегда.</p>
       </div>
       <div class="step reveal" style="--d:300ms">
-        <div class="lvl">CPM · оптимум<span class="bar"></span></div>
-        <h3>Оптимизация</h3>
-        <p>Сверяем прогноз с реальностью и двигаем бюджет между каналами. Каждое изменение опирается на цифры кампании.</p>
+        <div class="lvl">этап · 04<span class="bar"></span></div>
+        <h3>Отчет</h3>
+        <p>По окончании работ вместе с Заказчиком проверяем значения ключевых метрик проекта.</p>
+      </div>
+      <div class="step reveal" style="--d:400ms">
+        <div class="lvl">этап · 05<span class="bar"></span></div>
+        <h3>SLA-гарантия</h3>
+        <p>Заключаем SLA соглашение на поддержку выполненных работ, гарантируя качество.</p>
       </div>
     </div>
   </div>
@@ -437,9 +446,9 @@
 <section class="section" id="contact">
   <div class="wrap">
     <div class="sec-head center reveal">
-      <span class="sec-tag">Контакт</span>
-      <h2>Расскажите, что нужно запустить</h2>
-      <p>Оставьте контакт и пару вводных. Ответим в рабочее время и предложим следующий шаг.</p>
+      <span class="sec-tag">Контакты</span>
+      <h2>Расскажите, что хотите реализовать</h2>
+      <p>Оставьте контакт и пару вводных. Ответим и предложим следующий шаг.</p>
     </div>
     <div class="form reveal" style="--d:120ms">
       <input id="fName" type="text" placeholder="Имя" autocomplete="name">
@@ -461,7 +470,7 @@
         <a href="#caps">Направления</a>
         <a href="#process">Метод</a>
         <a href="#results">Результаты</a>
-        <a href="#contact">Контакт</a>
+        <a href="#contact">Контакты</a>
       </div>
       <div class="cr">© 2026 Gradient · медиапланирование · медиасопровождение · IT для B2B/B2G</div>
     </div>
@@ -475,7 +484,7 @@
   /* ---------- cursor-reactive particle field ---------- */
   const ambientCanvas=document.getElementById('ambient-field');
   const ambientCtx=ambientCanvas.getContext('2d',{alpha:true});
-  const AMBIENT_COLORS=[[124,58,237],[6,182,212],[244,63,94],[37,99,235],[245,158,11]];
+  const AMBIENT_COLORS=[[30,111,242]];
   let ambientW=0,ambientH=0,ambientDpr=1,ambientParts=[],ambientPulses=[],ambientLastT=0;
   let ambientScrollForce=0,ambientLastScrollY=window.scrollY;
   let pointer={x:-1000,y:-1000,px:-1000,py:-1000,vx:0,vy:0,speed:0,active:false};
@@ -584,9 +593,9 @@
     if(pointer.active){
       const r=110+pointer.speed*2.2;
       const glow=ambientCtx.createRadialGradient(pointer.x,pointer.y,0,pointer.x,pointer.y,r);
-      glow.addColorStop(0,'rgba(124,58,237,.105)');
-      glow.addColorStop(.38,'rgba(6,182,212,.055)');
-      glow.addColorStop(1,'rgba(244,63,94,0)');
+      glow.addColorStop(0,'rgba(30,111,242,.105)');
+      glow.addColorStop(.38,'rgba(30,111,242,.055)');
+      glow.addColorStop(1,'rgba(30,111,242,0)');
       ambientCtx.fillStyle=glow;ambientCtx.beginPath();ambientCtx.arc(pointer.x,pointer.y,r,0,Math.PI*2);ambientCtx.fill();
     }
     for(const p of ambientParts){
@@ -601,11 +610,6 @@
       ambientCtx.beginPath();ambientCtx.arc(p.x,p.y,radius*(2.5+focus),0,Math.PI*2);ambientCtx.fill();
       ambientCtx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
       ambientCtx.beginPath();ambientCtx.arc(p.x,p.y,radius,0,Math.PI*2);ambientCtx.fill();
-    }
-    for(const wave of ambientPulses){
-      const c=wave.color;
-      ambientCtx.strokeStyle=`rgba(${c[0]},${c[1]},${c[2]},${wave.life*.28})`;
-      ambientCtx.lineWidth=1.5;ambientCtx.beginPath();ambientCtx.arc(wave.x,wave.y,wave.r,0,Math.PI*2);ambientCtx.stroke();
     }
     ambientCtx.globalCompositeOperation='source-over';
   }
