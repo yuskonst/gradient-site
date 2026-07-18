@@ -220,13 +220,36 @@
   .step h3{font-family:var(--display);font-weight:600;font-size:19px;margin-bottom:10px;letter-spacing:-.3px}
   .step p{color:var(--muted);font-size:14.5px}
 
-  /* stats band */
-  .band{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,#eef4fc,var(--bg))}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:64px 0}
-  .stat{text-align:center;padding:0 16px}
-  .stat .big{font-family:var(--display);font-weight:600;font-size:clamp(40px,6vw,64px);letter-spacing:-2px;line-height:1;
-    background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-  .stat .lab{color:var(--muted);font-size:14.5px;margin-top:14px;max-width:250px;margin-inline:auto}
+  /* case studies */
+  .cases{padding:96px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:linear-gradient(180deg,#eef4fc,var(--bg));position:relative}
+  .cases-head{display:flex;align-items:flex-end;justify-content:space-between;gap:36px;margin-bottom:34px}
+  .cases-head .sec-head{margin-bottom:0}
+  .cases-controls{display:flex;align-items:center;gap:12px;flex-shrink:0}
+  .case-arrow,.case-dot{border:1px solid var(--line-bright);background:rgba(255,255,255,.82);color:var(--navy);cursor:pointer;transition:transform .2s,border-color .2s,background .2s,box-shadow .2s}
+  .case-arrow{width:42px;height:42px;border-radius:50%;display:grid;place-items:center}
+  .case-arrow:hover,.case-arrow:focus-visible{transform:translateY(-2px);border-color:var(--blue);background:var(--surface);box-shadow:0 10px 22px -14px rgba(30,111,242,.7)}
+  .case-arrow svg{width:18px;height:18px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .case-dots{display:flex;align-items:center;gap:7px;margin:0 4px}
+  .case-dot{width:9px;height:9px;padding:0;border-radius:50%}
+  .case-dot[aria-current="true"]{width:26px;border-radius:99px;background:var(--blue);border-color:var(--blue)}
+  .cases-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain;border-radius:18px}
+  .cases-viewport::-webkit-scrollbar{display:none}
+  .cases-track{display:flex;gap:18px}
+  .case-card{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;min-height:370px;display:grid;grid-template-columns:minmax(250px,.78fr) minmax(0,1.22fr);gap:clamp(28px,5vw,72px);padding:clamp(28px,5vw,56px);border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 26px 60px -42px rgba(10,42,107,.44)}
+  .case-brand{display:flex;flex-direction:column;justify-content:space-between;gap:30px;padding:26px;border:1px solid rgba(185,207,236,.9);border-radius:14px;background:linear-gradient(145deg,#f8fbff,#e8f2ff)}
+  .case-mark{width:100%;height:auto;max-width:280px}
+  .case-mark text{font-family:var(--display);fill:var(--navy)}
+  .case-mark .mark-accent{fill:var(--blue)}
+  .case-order{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--muted-2);text-transform:uppercase}
+  .case-company{font-family:var(--display);font-size:clamp(21px,2.5vw,30px);font-weight:600;letter-spacing:-.7px;line-height:1.05}
+  .case-content{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
+  .case-service{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.35px;line-height:1.35;color:var(--blue);text-transform:uppercase;margin-bottom:18px}
+  .case-content h3{font-family:var(--display);font-size:clamp(26px,3.1vw,38px);font-weight:600;letter-spacing:-1px;line-height:1.08;margin-bottom:18px;max-width:690px}
+  .case-content>p{color:var(--muted);font-size:16px;max-width:650px}
+  .case-impact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+  .case-impact li{list-style:none;display:flex;flex-direction:column;gap:5px;padding:0 12px 0 0}
+  .case-impact b{font-family:var(--display);font-weight:600;font-size:16px;color:var(--text)}
+  .case-impact span{color:var(--muted);font-size:14px;line-height:1.4}
 
   /* contact form */
   .form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
@@ -262,7 +285,10 @@
     .descent{grid-template-columns:1fr 1fr}
     .step,.step:nth-child(4),.step:nth-child(5){grid-column:auto;border-top:none;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
     .step:nth-child(even){border-right:none}
-    .stats{grid-template-columns:1fr;gap:42px}
+    .cases{padding:72px 0}
+    .cases-head{align-items:flex-start;flex-direction:column;gap:24px}
+    .case-card{grid-template-columns:1fr;min-height:0;gap:24px}
+    .case-brand{min-height:190px}
     .section{padding:72px 0}
     .cl-row{justify-content:center}
   }
@@ -272,6 +298,11 @@
     .step:nth-child(even){border-right:none}
     .hero-cta .btn{flex:1;justify-content:center}
     .wrap{padding:0 20px}
+    .cases-controls{width:100%;justify-content:space-between}
+    .case-card{padding:22px}
+    .case-brand{padding:22px;min-height:168px}
+    .case-mark{max-width:236px}
+    .case-impact{grid-template-columns:1fr;gap:18px;margin-top:24px}
   }
 
   @media(prefers-reduced-motion:reduce){
@@ -422,21 +453,92 @@
   </div>
 </section>
 
-<!-- STATS BAND -->
-<section class="band" id="results">
+<!-- CASE STUDIES -->
+<section class="cases" id="results" aria-labelledby="cases-title">
   <div class="wrap">
-    <div class="stats">
-      <div class="stat reveal" style="--d:0ms">
-        <div class="big" data-count="27" data-prefix="−" data-suffix="%">−0%</div>
-        <div class="lab">может составить снижение CPM после пересборки медиамикса</div>
+    <div class="cases-head reveal" style="--d:0ms">
+      <div class="sec-head">
+        <span class="sec-tag">Результаты</span>
+        <h2 id="cases-title">Кейсы, которые меняют процессы</h2>
+        <p>Кратко о проектах: что было автоматизировано и какие изменения стали доступны командам заказчиков.</p>
       </div>
-      <div class="stat reveal" style="--d:120ms">
-        <div class="big" data-count="3" data-prefix="×">×0</div>
-        <div class="lab">быстрее готовятся согласования и отчёты после автоматизации</div>
+      <div class="cases-controls" aria-label="Переключение кейсов">
+        <button class="case-arrow" id="casePrev" type="button" aria-label="Предыдущий кейс">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6"/></svg>
+        </button>
+        <div class="case-dots" role="group" aria-label="Список кейсов">
+          <button class="case-dot" type="button" aria-label="Кейс 1" aria-current="true"></button>
+          <button class="case-dot" type="button" aria-label="Кейс 2" aria-current="false"></button>
+          <button class="case-dot" type="button" aria-label="Кейс 3" aria-current="false"></button>
+        </div>
+        <button class="case-arrow" id="caseNext" type="button" aria-label="Следующий кейс">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6 6 6-6 6"/></svg>
+        </button>
       </div>
-      <div class="stat reveal" style="--d:240ms">
-        <div class="big" data-count="21">0</div>
-        <div class="lab">день — ориентир до первых данных, по которым уже можно действовать</div>
+    </div>
+    <div class="cases-viewport" id="casesViewport" tabindex="0" aria-label="Кейсы заказчиков">
+      <div class="cases-track">
+        <article class="case-card" aria-label="Кейс Лукойл-Интер-Кард">
+          <div class="case-brand">
+            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="Лукойл-Интер-Кард">
+              <path class="mark-accent" d="M6 10h18L15 37 6 10Zm9 34 12 38H3l12-38Z"/>
+              <text x="42" y="39" font-size="30" font-weight="600">ЛУКОЙЛ</text>
+              <text x="42" y="65" font-size="14" letter-spacing="1.5">ИНТЕР-КАРД</text>
+            </svg>
+            <span class="case-order">Кейс 01 · цифровые продукты</span>
+            <div class="case-company">Лукойл-Интер-Кард</div>
+          </div>
+          <div class="case-content">
+            <span class="case-service">IT-разработка · мультиагентная система</span>
+            <h3>Внедрение мультиагентной системы разработки цифровых продуктов</h3>
+            <p>Собрали взаимодействие специализированных агентов в единый контур: от разбора требований до подготовки материалов для команды разработки. Сценарии работы стали воспроизводимыми и наблюдаемыми.</p>
+            <ul class="case-impact">
+              <li><b>Единый контур</b><span>для постановки, проверки и передачи задач между участниками процесса.</span></li>
+              <li><b>Прозрачность решений</b><span>по статусам, очередности и результатам работы цифровых агентов.</span></li>
+            </ul>
+          </div>
+        </article>
+        <article class="case-card" aria-label="Кейс А7 Финансы">
+          <div class="case-brand">
+            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="А7 Финансы">
+              <text class="mark-accent" x="4" y="58" font-size="62" font-weight="700">А7</text>
+              <text x="118" y="42" font-size="26" font-weight="600">ФИНАНСЫ</text>
+              <path d="M120 54h142" stroke="#1e6ff2" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+            <span class="case-order">Кейс 02 · операционный контур</span>
+            <div class="case-company">А7 Финансы</div>
+          </div>
+          <div class="case-content">
+            <span class="case-service">AI-интеграция · процессы и SOP</span>
+            <h3>Оцифровка SOP и картирование рабочих процессов</h3>
+            <p>Описали повторяющиеся операции в единой модели и связали их с ролями, документами и точками контроля. Команда получила согласованную карту процесса вместо разрозненных инструкций.</p>
+            <ul class="case-impact">
+              <li><b>Единый язык процесса</b><span>для команды, владельцев операций и новых участников.</span></li>
+              <li><b>Основа для улучшений</b><span>чтобы видеть зависимости, узкие места и задачи для автоматизации.</span></li>
+            </ul>
+          </div>
+        </article>
+        <article class="case-card" aria-label="Кейс АНО Евразия">
+          <div class="case-brand">
+            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="АНО Евразия">
+              <circle class="mark-accent" cx="26" cy="42" r="20"/>
+              <path d="M13 42h26M26 29v26" stroke="#f6f9fe" stroke-width="3" stroke-linecap="round"/>
+              <text x="58" y="42" font-size="28" font-weight="600">ЕВРАЗИЯ</text>
+              <text x="60" y="66" font-size="14" letter-spacing="1.8">АНО</text>
+            </svg>
+            <span class="case-order">Кейс 03 · аналитика</span>
+            <div class="case-company">АНО Евразия</div>
+          </div>
+          <div class="case-content">
+            <span class="case-service">BI-отчётность · текстовые выводы</span>
+            <h3>Автоматизированная BI-отчётность с текстовыми выводами</h3>
+            <p>Настроили регулярную отчётность и добавили пояснения к ключевым изменениям показателей. Вместо ручной сборки данных команда работает с единым набором метрик и контекстом для их интерпретации.</p>
+            <ul class="case-impact">
+              <li><b>Регулярный обзор</b><span>ключевых показателей без ручной консолидации исходных данных.</span></li>
+              <li><b>Контекст для решений</b><span>чтобы быстрее замечать отклонения и обсуждать следующие действия.</span></li>
+            </ul>
+          </div>
+        </article>
       </div>
     </div>
   </div>
@@ -814,11 +916,11 @@
       setTimeout(startDescent, 1050);
     }
     initObserver();
-    initCounters();
+    initCases();
   }
 
   /* ---------- scroll reveals for sections ---------- */
-  const SCROLL_SEL='.section .reveal,.band .reveal,.clients .reveal';
+  const SCROLL_SEL='.section .reveal,.cases .reveal,.clients .reveal';
   function initObserver(){
     if(reduce){document.querySelectorAll(SCROLL_SEL).forEach(e=>e.classList.add('in'));return;}
     const io=new IntersectionObserver((ents)=>{
@@ -833,19 +935,38 @@
     document.querySelectorAll(SCROLL_SEL).forEach(el=>io.observe(el));
   }
 
-  /* ---------- count-up stats ---------- */
-  function initCounters(){
-    const io=new IntersectionObserver((ents)=>{
-      ents.forEach(e=>{
-        if(!e.isIntersecting)return;
-        const el=e.target,target=+el.dataset.count,pre=el.dataset.prefix||'',suf=el.dataset.suffix||'';
-        const dur=1100,t0=performance.now();
-        function fr(t){const p=Math.min(1,(t-t0)/dur);const ease=1-Math.pow(1-p,3);el.textContent=pre+Math.round(target*ease)+suf;if(p<1)requestAnimationFrame(fr);}
-        if(reduce){el.textContent=pre+target+suf;}else{requestAnimationFrame(fr);}
-        io.unobserve(el);
-      });
-    },{threshold:.5});
-    document.querySelectorAll('.stat .big').forEach(el=>io.observe(el));
+  /* ---------- case studies carousel ---------- */
+  function initCases(){
+    const viewport=document.getElementById('casesViewport');
+    const slides=[...viewport.querySelectorAll('.case-card')];
+    const dots=[...document.querySelectorAll('.case-dot')];
+    const prev=document.getElementById('casePrev');
+    const next=document.getElementById('caseNext');
+    let active=0,scrollT;
+    function update(index){
+      active=(index+slides.length)%slides.length;
+      dots.forEach((dot,i)=>dot.setAttribute('aria-current',String(i===active)));
+    }
+    function go(index){
+      update(index);
+      viewport.scrollTo({left:slides[active].offsetLeft,behavior:reduce?'auto':'smooth'});
+    }
+    prev.addEventListener('click',()=>go(active-1));
+    next.addEventListener('click',()=>go(active+1));
+    dots.forEach((dot,i)=>dot.addEventListener('click',()=>go(i)));
+    viewport.addEventListener('scroll',()=>{
+      clearTimeout(scrollT);
+      scrollT=setTimeout(()=>{
+        const center=viewport.scrollLeft+viewport.clientWidth/2;
+        let nearest=0,distance=Infinity;
+        slides.forEach((slide,i)=>{const d=Math.abs(slide.offsetLeft+slide.offsetWidth/2-center);if(d<distance){distance=d;nearest=i;}});
+        update(nearest);
+      },80);
+    },{passive:true});
+    viewport.addEventListener('keydown',(e)=>{
+      if(e.key==='ArrowLeft'){e.preventDefault();go(active-1);}
+      if(e.key==='ArrowRight'){e.preventDefault();go(active+1);}
+    });
   }
 
   /* ---------- header shadow on scroll ---------- */
