@@ -246,10 +246,9 @@
   .case-service{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.35px;line-height:1.35;color:var(--blue);text-transform:uppercase;margin-bottom:18px}
   .case-content h3{font-family:var(--display);font-size:clamp(26px,3.1vw,38px);font-weight:600;letter-spacing:-1px;line-height:1.08;margin-bottom:18px;max-width:690px}
   .case-content>p{color:var(--muted);font-size:16px;max-width:650px}
-  .case-impact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
-  .case-impact li{list-style:none;display:flex;flex-direction:column;gap:5px;padding:0 12px 0 0}
-  .case-impact b{font-family:var(--display);font-weight:600;font-size:16px;color:var(--text)}
-  .case-impact span{color:var(--muted);font-size:14px;line-height:1.4}
+  .case-value{width:100%;margin-top:30px;padding-top:22px;border-top:1px solid var(--line)}
+  .case-value b{display:block;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:1.35px;line-height:1.35;color:var(--blue);text-transform:uppercase;margin-bottom:10px}
+  .case-value p{font-family:var(--display);font-size:clamp(18px,2vw,23px);font-weight:500;letter-spacing:-.35px;line-height:1.28;color:var(--text);max-width:650px}
 
   /* contact form */
   .form{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
@@ -302,7 +301,7 @@
     .case-card{padding:22px}
     .case-brand{padding:22px;min-height:168px}
     .case-mark{max-width:236px}
-    .case-impact{grid-template-columns:1fr;gap:18px;margin-top:24px}
+    .case-value{margin-top:24px}
   }
 
   @media(prefers-reduced-motion:reduce){
@@ -459,8 +458,8 @@
     <div class="cases-head reveal" style="--d:0ms">
       <div class="sec-head">
         <span class="sec-tag">Результаты</span>
-        <h2 id="cases-title">Кейсы, которые меняют процессы</h2>
-        <p>Кратко о проектах: что было автоматизировано и какие изменения стали доступны командам заказчиков.</p>
+        <h2 id="cases-title">Результаты, которые создают бизнес-ценность</h2>
+        <p>Кратко о проектах: что было реализовано и какие изменения стали доступны заказчикам.</p>
       </div>
       <div class="cases-controls" aria-label="Переключение кейсов">
         <button class="case-arrow" id="casePrev" type="button" aria-label="Предыдущий кейс">
@@ -489,13 +488,13 @@
             <div class="case-company">Лукойл-Интер-Кард</div>
           </div>
           <div class="case-content">
-            <span class="case-service">IT-разработка · мультиагентная система</span>
+            <span class="case-service">IT-разработка</span>
             <h3>Внедрение мультиагентной системы разработки цифровых продуктов</h3>
             <p>Собрали взаимодействие специализированных агентов в единый контур: от разбора требований до подготовки материалов для команды разработки. Сценарии работы стали воспроизводимыми и наблюдаемыми.</p>
-            <ul class="case-impact">
-              <li><b>Единый контур</b><span>для постановки, проверки и передачи задач между участниками процесса.</span></li>
-              <li><b>Прозрачность решений</b><span>по статусам, очередности и результатам работы цифровых агентов.</span></li>
-            </ul>
+            <div class="case-value">
+              <b>Бизнес-ценность</b>
+              <p>Снизили расходы на разработку продуктов на 46% и ускорили разработку цифровых продуктов в ~2.5 раза.</p>
+            </div>
           </div>
         </article>
         <article class="case-card" aria-label="Кейс А7 Финансы">
@@ -509,13 +508,13 @@
             <div class="case-company">А7 Финансы</div>
           </div>
           <div class="case-content">
-            <span class="case-service">AI-интеграция · процессы и SOP</span>
+            <span class="case-service">AI-интеграция</span>
             <h3>Оцифровка SOP и картирование рабочих процессов</h3>
             <p>Описали повторяющиеся операции в единой модели и связали их с ролями, документами и точками контроля. Команда получила согласованную карту процесса вместо разрозненных инструкций.</p>
-            <ul class="case-impact">
-              <li><b>Единый язык процесса</b><span>для команды, владельцев операций и новых участников.</span></li>
-              <li><b>Основа для улучшений</b><span>чтобы видеть зависимости, узкие места и задачи для автоматизации.</span></li>
-            </ul>
+            <div class="case-value">
+              <b>Бизнес-ценность</b>
+              <p>Снизили операционную нагрузку структурного подразделения компании на 52%.</p>
+            </div>
           </div>
         </article>
         <article class="case-card" aria-label="Кейс АНО Евразия">
@@ -530,13 +529,13 @@
             <div class="case-company">АНО Евразия</div>
           </div>
           <div class="case-content">
-            <span class="case-service">BI-отчётность · текстовые выводы</span>
+            <span class="case-service">BI-отчётность</span>
             <h3>Автоматизированная BI-отчётность с текстовыми выводами</h3>
             <p>Настроили регулярную отчётность и добавили пояснения к ключевым изменениям показателей. Вместо ручной сборки данных команда работает с единым набором метрик и контекстом для их интерпретации.</p>
-            <ul class="case-impact">
-              <li><b>Регулярный обзор</b><span>ключевых показателей без ручной консолидации исходных данных.</span></li>
-              <li><b>Контекст для решений</b><span>чтобы быстрее замечать отклонения и обсуждать следующие действия.</span></li>
-            </ul>
+            <div class="case-value">
+              <b>Бизнес-ценность</b>
+              <p>Добавили интерпретируемость результата и возможность его многократного использования в смежных аналитических бизнес-процессах компании.</p>
+            </div>
           </div>
         </article>
       </div>
