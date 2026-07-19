@@ -171,7 +171,7 @@
   .clients{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fbfdff;padding:30px 0;position:relative;z-index:2}
   .cl-row{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-content:space-between;gap:34px}
   .cl-label{font-family:var(--mono);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted-2)}
-  .cl-marks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(100%,790px);justify-self:end}
+  .cl-marks{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;width:min(100%,970px);justify-self:end}
   .client-logo{min-height:78px;display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:13px;padding:12px 15px;border:1px solid rgba(185,207,236,.82);border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(238,245,253,.78));box-shadow:0 14px 30px -28px rgba(10,42,107,.6);transition:transform .3s,border-color .3s,box-shadow .3s}
   .client-logo:hover{transform:translateY(-3px);border-color:var(--line-bright);box-shadow:0 18px 34px -25px rgba(30,111,242,.48)}
   .client-logo__art{height:48px;display:flex;align-items:center;justify-content:center}
@@ -179,6 +179,7 @@
   .client-logo--lukoil .client-logo__art{height:38px}
   .client-logo--a7 .client-logo__art{height:32px}
   .client-logo--evrazia .client-logo__art{height:52px}
+  .client-logo--ldpr .client-logo__art{height:48px}
   .client-logo__name{font-family:var(--display);font-weight:600;font-size:12px;line-height:1.2;letter-spacing:.15px;color:var(--navy)}
 
   /* ---------- SECTION SHELL ---------- */
@@ -299,7 +300,7 @@
     .section{padding:72px 0}
     .cl-row{grid-template-columns:1fr;justify-content:center}
     .cl-label{text-align:center}
-    .cl-marks{width:100%;justify-self:stretch}
+    .cl-marks{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;justify-self:stretch}
   }
   @media(max-width:560px){
     .descent{grid-template-columns:1fr}
@@ -394,7 +395,7 @@
 <section class="clients" id="clients">
   <div class="wrap cl-row reveal">
     <span class="cl-label">нам доверяют</span>
-    <div class="cl-marks" role="list" aria-label="Компании, которые нам доверяют">
+    <div class="cl-marks" role="list" aria-label="Организации, которые нам доверяют">
       <figure class="client-logo client-logo--a7" role="listitem">
         <span class="client-logo__art"><img src="assets/logos/a7.svg" alt="A7"></span>
         <figcaption class="client-logo__name">A7</figcaption>
@@ -406,6 +407,10 @@
       <figure class="client-logo client-logo--evrazia" role="listitem">
         <span class="client-logo__art"><img src="assets/logos/ano-evrazia.svg" alt="АНО «Евразия»"></span>
         <figcaption class="client-logo__name">АНО «Евразия»</figcaption>
+      </figure>
+      <figure class="client-logo client-logo--ldpr" role="listitem">
+        <span class="client-logo__art"><img src="assets/logos/ldpr.svg" alt="Политическая партия ЛДПР"></span>
+        <figcaption class="client-logo__name">ЛДПР</figcaption>
       </figure>
     </div>
   </div>
