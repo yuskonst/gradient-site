@@ -168,12 +168,18 @@
   .readout .v.done{color:var(--ok)}
 
   /* ---------- CLIENTS STRIP ---------- */
-  .clients{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fbfdff;padding:26px 0;position:relative;z-index:2}
-  .cl-row{display:flex;align-items:center;justify-content:space-between;gap:34px;flex-wrap:wrap}
+  .clients{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:#fbfdff;padding:30px 0;position:relative;z-index:2}
+  .cl-row{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;justify-content:space-between;gap:34px}
   .cl-label{font-family:var(--mono);font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted-2)}
-  .cl-marks{display:flex;gap:clamp(26px,5vw,60px);flex-wrap:wrap;align-items:center}
-  .cl-marks span{font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:1.5px;color:#3d5a8f;opacity:.85;transition:opacity .3s}
-  .cl-marks span:hover{opacity:1}
+  .cl-marks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:min(100%,790px);justify-self:end}
+  .client-logo{min-height:78px;display:grid;grid-template-columns:112px minmax(0,1fr);align-items:center;gap:13px;padding:12px 15px;border:1px solid rgba(185,207,236,.82);border-radius:14px;background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(238,245,253,.78));box-shadow:0 14px 30px -28px rgba(10,42,107,.6);transition:transform .3s,border-color .3s,box-shadow .3s}
+  .client-logo:hover{transform:translateY(-3px);border-color:var(--line-bright);box-shadow:0 18px 34px -25px rgba(30,111,242,.48)}
+  .client-logo__art{height:48px;display:flex;align-items:center;justify-content:center}
+  .client-logo__art img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;object-fit:contain}
+  .client-logo--lukoil .client-logo__art{height:38px}
+  .client-logo--a7 .client-logo__art{height:32px}
+  .client-logo--evrazia .client-logo__art{height:52px}
+  .client-logo__name{font-family:var(--display);font-weight:600;font-size:12px;line-height:1.2;letter-spacing:.15px;color:var(--navy)}
 
   /* ---------- SECTION SHELL ---------- */
   .section{padding:96px 0;position:relative}
@@ -237,9 +243,11 @@
   .cases-track{display:flex;gap:18px}
   .case-card{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;min-height:370px;display:grid;grid-template-columns:minmax(250px,.78fr) minmax(0,1.22fr);gap:clamp(28px,5vw,72px);padding:clamp(28px,5vw,56px);border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 26px 60px -42px rgba(10,42,107,.44)}
   .case-brand{display:flex;flex-direction:column;justify-content:space-between;gap:30px;padding:26px;border:1px solid rgba(185,207,236,.9);border-radius:14px;background:linear-gradient(145deg,#f8fbff,#e8f2ff)}
-  .case-mark{width:100%;height:auto;max-width:280px}
-  .case-mark text{font-family:var(--display);fill:var(--navy)}
-  .case-mark .mark-accent{fill:var(--blue)}
+  .case-logo{height:94px;display:flex;align-items:center;justify-content:flex-start}
+  .case-mark{display:block;width:auto;height:auto;max-width:100%;max-height:94px;object-fit:contain}
+  .case-logo--lukoil .case-mark{width:276px}
+  .case-logo--a7 .case-mark{width:116px}
+  .case-logo--evrazia .case-mark{width:156px}
   .case-order{font-family:var(--mono);font-size:12px;letter-spacing:1.5px;color:var(--muted-2);text-transform:uppercase}
   .case-company{font-family:var(--display);font-size:clamp(21px,2.5vw,30px);font-weight:600;letter-spacing:-.7px;line-height:1.05}
   .case-content{display:flex;flex-direction:column;align-items:flex-start;justify-content:center}
@@ -289,7 +297,9 @@
     .case-card{grid-template-columns:1fr;min-height:0;gap:24px}
     .case-brand{min-height:190px}
     .section{padding:72px 0}
-    .cl-row{justify-content:center}
+    .cl-row{grid-template-columns:1fr;justify-content:center}
+    .cl-label{text-align:center}
+    .cl-marks{width:100%;justify-self:stretch}
   }
   @media(max-width:560px){
     .descent{grid-template-columns:1fr}
@@ -300,7 +310,13 @@
     .cases-controls{width:100%;justify-content:space-between}
     .case-card{padding:22px}
     .case-brand{padding:22px;min-height:168px}
-    .case-mark{max-width:236px}
+    .cl-marks{grid-template-columns:1fr}
+    .client-logo{grid-template-columns:112px minmax(0,1fr)}
+    .case-logo{height:82px}
+    .case-mark{max-height:82px}
+    .case-logo--lukoil .case-mark{width:236px}
+    .case-logo--a7 .case-mark{width:104px}
+    .case-logo--evrazia .case-mark{width:140px}
     .case-value{margin-top:24px}
   }
 
@@ -378,10 +394,19 @@
 <section class="clients" id="clients">
   <div class="wrap cl-row reveal">
     <span class="cl-label">нам доверяют</span>
-    <div class="cl-marks">
-      <span>А7</span>
-      <span>ЛУКОЙЛ</span>
-      <span>ЕВРАЗИЯ МЕДИА</span>
+    <div class="cl-marks" role="list" aria-label="Компании, которые нам доверяют">
+      <figure class="client-logo client-logo--a7" role="listitem">
+        <span class="client-logo__art"><img src="assets/logos/a7.svg" alt="A7"></span>
+        <figcaption class="client-logo__name">A7</figcaption>
+      </figure>
+      <figure class="client-logo client-logo--lukoil" role="listitem">
+        <span class="client-logo__art"><img src="assets/logos/lukoil.svg" alt="ЛУКОЙЛ"></span>
+        <figcaption class="client-logo__name">ЛУКОЙЛ</figcaption>
+      </figure>
+      <figure class="client-logo client-logo--evrazia" role="listitem">
+        <span class="client-logo__art"><img src="assets/logos/ano-evrazia.svg" alt="АНО «Евразия»"></span>
+        <figcaption class="client-logo__name">АНО «Евразия»</figcaption>
+      </figure>
     </div>
   </div>
 </section>
@@ -479,11 +504,9 @@
       <div class="cases-track">
         <article class="case-card" aria-label="Кейс Лукойл-Интер-Кард">
           <div class="case-brand">
-            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="Лукойл-Интер-Кард">
-              <path class="mark-accent" d="M6 10h18L15 37 6 10Zm9 34 12 38H3l12-38Z"/>
-              <text x="42" y="39" font-size="30" font-weight="600">ЛУКОЙЛ</text>
-              <text x="42" y="65" font-size="14" letter-spacing="1.5">ИНТЕР-КАРД</text>
-            </svg>
+            <div class="case-logo case-logo--lukoil">
+              <img class="case-mark" src="assets/logos/lukoil.svg" alt="ЛУКОЙЛ">
+            </div>
             <span class="case-order">Кейс 01 · цифровые продукты</span>
             <div class="case-company">Лукойл-Интер-Кард</div>
           </div>
@@ -499,11 +522,9 @@
         </article>
         <article class="case-card" aria-label="Кейс А7 Финансы">
           <div class="case-brand">
-            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="А7 Финансы">
-              <text class="mark-accent" x="4" y="58" font-size="62" font-weight="700">А7</text>
-              <text x="118" y="42" font-size="26" font-weight="600">ФИНАНСЫ</text>
-              <path d="M120 54h142" stroke="#1e6ff2" stroke-width="4" stroke-linecap="round"/>
-            </svg>
+            <div class="case-logo case-logo--a7">
+              <img class="case-mark" src="assets/logos/a7.svg" alt="A7 Финансы">
+            </div>
             <span class="case-order">Кейс 02 · операционный контур</span>
             <div class="case-company">А7 Финансы</div>
           </div>
@@ -517,16 +538,13 @@
             </div>
           </div>
         </article>
-        <article class="case-card" aria-label="Кейс АНО Евразия">
+        <article class="case-card" aria-label="Кейс АНО «Евразия»">
           <div class="case-brand">
-            <svg class="case-mark" viewBox="0 0 300 92" role="img" aria-label="АНО Евразия">
-              <circle class="mark-accent" cx="26" cy="42" r="20"/>
-              <path d="M13 42h26M26 29v26" stroke="#f6f9fe" stroke-width="3" stroke-linecap="round"/>
-              <text x="58" y="42" font-size="28" font-weight="600">ЕВРАЗИЯ</text>
-              <text x="60" y="66" font-size="14" letter-spacing="1.8">АНО</text>
-            </svg>
+            <div class="case-logo case-logo--evrazia">
+              <img class="case-mark" src="assets/logos/ano-evrazia.svg" alt="АНО «Евразия»">
+            </div>
             <span class="case-order">Кейс 03 · аналитика</span>
-            <div class="case-company">АНО Евразия</div>
+            <div class="case-company">АНО «Евразия»</div>
           </div>
           <div class="case-content">
             <span class="case-service">BI-отчётность</span>
