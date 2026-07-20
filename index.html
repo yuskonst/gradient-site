@@ -580,7 +580,7 @@
       <textarea id="fMsg" rows="4" placeholder="Пара слов о задаче: продукт, аудитория, сроки"></textarea>
       <button class="btn btn-primary" id="fSend">Отправить →</button>
       <div id="fNote" class="fnote"></div>
-      <div class="alt">или напрямую: <a href="mailto:hello@gradient.media">hello@gradient.media</a></div>
+      <div class="alt">или напрямую: <a href="mailto:gradfx@proton.me">gradfx@proton.me</a></div>
     </div>
   </div>
 </section>
@@ -1008,7 +1008,7 @@
       return;
     }
     const body=encodeURIComponent('Имя: '+(name||'—')+'\nКонтакт: '+contact+'\n\nЗадача: '+(msg||'—'));
-    window.location.href='mailto:hello@gradient.media?subject='+encodeURIComponent('Заявка с сайта Gradient')+'&body='+body;
+    window.location.href='mailto:gradfx@proton.me?subject='+encodeURIComponent('Заявка с сайта Gradient')+'&body='+body;
     note.textContent='Спасибо! Мы открыли письмо в вашей почте — просто нажмите «Отправить».';
     note.className='fnote ok';
   });
