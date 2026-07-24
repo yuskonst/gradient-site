@@ -604,12 +604,21 @@
 <script>
 (function(){
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const browserBrands=navigator.userAgentData?.brands||[];
+  const hasGoogleChromeBrand=browserBrands.some(({brand})=>brand==='Google Chrome');
+  const chromiumImpostor=/(Edg|OPR|Opera|SamsungBrowser|YaBrowser|Vivaldi|DuckDuckGo)/.test(navigator.userAgent);
+  const isGoogleChrome=browserBrands.length
+    ? hasGoogleChromeBrand
+    : /Chrome\/\d+/.test(navigator.userAgent)&&!chromiumImpostor&&!navigator.brave;
+  const isChromeDesktop=isGoogleChrome&&!/(Android|iPhone|iPad|iPod)/.test(navigator.userAgent);
+  document.documentElement.dataset.browser=isGoogleChrome?'chrome':'other';
+  document.documentElement.dataset.chromeProfile=isChromeDesktop?'desktop-performance':'standard';
 
   /* ---------- cursor-reactive particle field ---------- */
   const ambientCanvas=document.getElementById('ambient-field');
   const ambientCtx=ambientCanvas.getContext('2d',{alpha:true});
   const AMBIENT_COLORS=[[30,111,242]];
-  let ambientW=0,ambientH=0,ambientDpr=1,ambientParts=[],ambientPulses=[],ambientLastT=0;
+  let ambientW=0,ambientH=0,ambientDpr=1,ambientParts=[],ambientPulses=[],ambientLastT=0,ambientStaticLayer=null;
   let ambientScrollForce=0,ambientLastScrollY=window.scrollY;
   let pointer={x:-1000,y:-1000,px:-1000,py:-1000,vx:0,vy:0,speed:0,active:false};
 
@@ -618,7 +627,7 @@
     return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
   }
   function buildAmbient(){
-    ambientDpr=Math.min(window.devicePixelRatio||1,1.6);
+    ambientDpr=Math.min(window.devicePixelRatio||1,isChromeDesktop?1:1.6);
     ambientW=Math.max(1,window.innerWidth);ambientH=Math.max(1,window.innerHeight);
     ambientCanvas.width=Math.round(ambientW*ambientDpr);
     ambientCanvas.height=Math.round(ambientH*ambientDpr);
@@ -631,8 +640,26 @@
         drift:.55+rnd()*.90,radius:1.05+rnd()*1.75+(i%13===0?1.45:0),
         glow:i%13===0||rnd()>.62,color:AMBIENT_COLORS[i%AMBIENT_COLORS.length],alpha:.43+rnd()*.40};
     });
+    renderAmbientBaseLayer();
   }
   function gradientSeed(w,h){return ((w*73856093)^(h*19349663)^0x47524144)>>>0;}
+
+  function renderAmbientBaseLayer(){
+    if(!isChromeDesktop){ambientStaticLayer=null;return;}
+    const layer=document.createElement('canvas');
+    layer.width=ambientCanvas.width;layer.height=ambientCanvas.height;
+    const layerCtx=layer.getContext('2d',{alpha:true});
+    layerCtx.setTransform(ambientDpr,0,0,ambientDpr,0,0);
+    layerCtx.globalCompositeOperation='multiply';
+    layerCtx.filter='blur(2.6px)';
+    for(const p of ambientParts){
+      const c=p.color,radius=p.radius*1.45;
+      layerCtx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${p.glow ? .075 : .052})`;
+      layerCtx.beginPath();layerCtx.arc(p.x,p.y,radius,0,Math.PI*2);layerCtx.fill();
+    }
+    layerCtx.filter='none';layerCtx.globalCompositeOperation='source-over';
+    ambientStaticLayer=layer;
+  }
 
   function setPointer(e){
     const wasActive=pointer.active;
@@ -702,17 +729,20 @@
 
   function drawAmbient(t){
     ambientCtx.clearRect(0,0,ambientW,ambientH);
-    ambientCtx.globalCompositeOperation='multiply';
-
-    /* blurred low-contrast field away from the pointer */
-    ambientCtx.filter='blur(2.6px)';
-    for(const p of ambientParts){
-      const c=p.color,beat=.90+.10*Math.sin(t*.0022*p.drift+p.phase);
-      const radius=p.radius*beat*1.45;
-      ambientCtx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${p.glow ? .075 : .052})`;
-      ambientCtx.beginPath();ambientCtx.arc(p.x,p.y,radius,0,Math.PI*2);ambientCtx.fill();
+    if(isChromeDesktop&&ambientStaticLayer){
+      ambientCtx.drawImage(ambientStaticLayer,0,0,ambientW,ambientH);
+    }else{
+      ambientCtx.globalCompositeOperation='multiply';
+      /* blurred low-contrast field away from the pointer */
+      ambientCtx.filter='blur(2.6px)';
+      for(const p of ambientParts){
+        const c=p.color,beat=.90+.10*Math.sin(t*.0022*p.drift+p.phase);
+        const radius=p.radius*beat*1.45;
+        ambientCtx.fillStyle=`rgba(${c[0]},${c[1]},${c[2]},${p.glow ? .075 : .052})`;
+        ambientCtx.beginPath();ambientCtx.arc(p.x,p.y,radius,0,Math.PI*2);ambientCtx.fill();
+      }
+      ambientCtx.filter='none';
     }
-    ambientCtx.filter='none';
 
     if(pointer.active){
       const r=110+pointer.speed*2.2;
@@ -820,6 +850,26 @@
   /* ---- swarm of optimizers, continuous loop ---- */
   const TINTS=[[34,211,238],[30,111,242],[10,42,107]];   // cyan, blue, navy
   let parts=[], loopAlpha=1, phase='run', phaseT=0, pulse=0, dispLoss=1, dispGrad=0;
+  let instrumentVisible=true,instrumentStarted=false;
+
+  function canRunInstrument(){return !isChromeDesktop||(!document.hidden&&instrumentVisible);}
+  function syncInstrumentLoop(){
+    if(!isChromeDesktop)return;
+    if(canRunInstrument()){
+      if(instrumentStarted&&!raf)loop();
+    }else if(raf){
+      cancelAnimationFrame(raf);raf=null;
+    }
+  }
+  function initChromeInstrumentLifecycle(){
+    if(!isChromeDesktop||reduce)return;
+    const instrument=document.querySelector('.instrument');
+    const observer=new IntersectionObserver(([entry])=>{
+      instrumentVisible=entry.isIntersecting;syncInstrumentLoop();
+    },{rootMargin:'160px 0px 160px 0px'});
+    observer.observe(instrument);
+    document.addEventListener('visibilitychange',syncInstrumentLoop);
+  }
 
   function spawn(){
     const bases=[[-0.86,0.80],[0.88,0.78],[0.78,-0.86]];
@@ -879,6 +929,7 @@
   }
 
   function loop(){
+    if(!canRunInstrument()){raf=null;return;}
     pulse+=0.06;
     if(phase==='run'){
       let allDone=true,minLoss=1,best=null;
@@ -909,7 +960,11 @@
     raf=requestAnimationFrame(loop);
   }
 
-  function startDescent(){spawn(); if(raf)cancelAnimationFrame(raf); loop();}
+  function startDescent(){
+    spawn();instrumentStarted=true;
+    if(raf)cancelAnimationFrame(raf);raf=null;
+    if(canRunInstrument())loop();
+  }
 
   function setupInstrument(){
     sizeCanvas();renderField();
@@ -930,6 +985,7 @@
   function launch(){
     document.body.classList.add('ready');
     setupInstrument();
+    initChromeInstrumentLifecycle();
     if(reduce){
       document.querySelectorAll('.reveal,.clip').forEach(el=>el.classList.add('in'));
     }else{
