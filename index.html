@@ -610,15 +610,20 @@
   const isGoogleChrome=browserBrands.length
     ? hasGoogleChromeBrand
     : /Chrome\/\d+/.test(navigator.userAgent)&&!chromiumImpostor&&!navigator.brave;
-  const isChromeDesktop=isGoogleChrome&&!/(Android|iPhone|iPad|iPod)/.test(navigator.userAgent);
-  document.documentElement.dataset.browser=isGoogleChrome?'chrome':'other';
-  document.documentElement.dataset.chromeProfile=isChromeDesktop?'desktop-performance':'standard';
+  const isAndroid=/Android/i.test(navigator.userAgent);
+  const isAndroidWebView=isAndroid&&(/\bwv\b/i.test(navigator.userAgent)||(/Version\/4\.0/i.test(navigator.userAgent)&&/Chrome\/\d+/i.test(navigator.userAgent)));
+  const isChromeDesktop=isGoogleChrome&&!isAndroid&&!/(iPhone|iPad|iPod)/.test(navigator.userAgent);
+  const isAndroidChrome=isGoogleChrome&&isAndroid&&!isAndroidWebView;
+  const isAndroidPerformanceProfile=isAndroidChrome||isAndroidWebView;
+  const isChromePerformanceProfile=isChromeDesktop||isAndroidPerformanceProfile;
+  document.documentElement.dataset.browser=isAndroidWebView?'android-webview':isGoogleChrome?'chrome':'other';
+  document.documentElement.dataset.chromeProfile=isChromeDesktop?'desktop-performance':isAndroidPerformanceProfile?'android-performance':'standard';
 
   /* ---------- cursor-reactive particle field ---------- */
   const ambientCanvas=document.getElementById('ambient-field');
   const ambientCtx=ambientCanvas.getContext('2d',{alpha:true});
   const AMBIENT_COLORS=[[30,111,242]];
-  let ambientW=0,ambientH=0,ambientDpr=1,ambientParts=[],ambientPulses=[],ambientLastT=0,ambientStaticLayer=null;
+  let ambientW=0,ambientH=0,ambientDpr=1,ambientParts=[],ambientPulses=[],ambientLastT=0,ambientLastDrawT=0,ambientMotion=0,ambientRaf=null,ambientStaticLayer=null;
   let ambientScrollForce=0,ambientLastScrollY=window.scrollY;
   let pointer={x:-1000,y:-1000,px:-1000,py:-1000,vx:0,vy:0,speed:0,active:false};
 
@@ -627,7 +632,7 @@
     return ()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};
   }
   function buildAmbient(){
-    ambientDpr=Math.min(window.devicePixelRatio||1,isChromeDesktop?1:1.6);
+    ambientDpr=Math.min(window.devicePixelRatio||1,isChromePerformanceProfile?1:1.6);
     ambientW=Math.max(1,window.innerWidth);ambientH=Math.max(1,window.innerHeight);
     ambientCanvas.width=Math.round(ambientW*ambientDpr);
     ambientCanvas.height=Math.round(ambientH*ambientDpr);
@@ -645,7 +650,7 @@
   function gradientSeed(w,h){return ((w*73856093)^(h*19349663)^0x47524144)>>>0;}
 
   function renderAmbientBaseLayer(){
-    if(!isChromeDesktop){ambientStaticLayer=null;return;}
+    if(!isChromePerformanceProfile){ambientStaticLayer=null;return;}
     const layer=document.createElement('canvas');
     layer.width=ambientCanvas.width;layer.height=ambientCanvas.height;
     const layerCtx=layer.getContext('2d',{alpha:true});
@@ -664,14 +669,17 @@
   function setPointer(e){
     const wasActive=pointer.active;
     const nx=e.clientX,ny=e.clientY;
+    const moved=!wasActive||nx!==pointer.x||ny!==pointer.y;
     pointer.vx=wasActive?Math.max(-42,Math.min(42,nx-pointer.x)):0;
     pointer.vy=wasActive?Math.max(-42,Math.min(42,ny-pointer.y)):0;
     pointer.speed=Math.min(42,Math.hypot(pointer.vx,pointer.vy));
     pointer.px=pointer.x;pointer.py=pointer.y;pointer.x=nx;pointer.y=ny;pointer.active=true;
+    if(moved)requestAndroidAmbientFrame();
   }
   window.addEventListener('pointermove',setPointer,{passive:true});
   window.addEventListener('pointerdown',(e)=>{
     setPointer(e);ambientPulses.push({x:e.clientX,y:e.clientY,r:12,life:1,color:AMBIENT_COLORS[ambientPulses.length%AMBIENT_COLORS.length]});
+    requestAndroidAmbientFrame();
   },{passive:true});
   window.addEventListener('wheel',(e)=>{
     if(Number.isFinite(e.clientX)&&Number.isFinite(e.clientY)){
@@ -679,13 +687,15 @@
     }
     ambientScrollForce=Math.max(-52,Math.min(52,ambientScrollForce+e.deltaY*.10));
     pointer.speed=Math.max(pointer.speed,Math.min(42,Math.abs(e.deltaY)*.16));
+    if(e.deltaY)requestAndroidAmbientFrame();
   },{passive:true});
   window.addEventListener('scroll',()=>{
     const dy=window.scrollY-ambientLastScrollY;ambientLastScrollY=window.scrollY;
     ambientScrollForce=Math.max(-52,Math.min(52,ambientScrollForce+dy*.28));
     if(pointer.x>-500){pointer.active=true;pointer.speed=Math.max(pointer.speed,Math.min(42,Math.abs(dy)*.45));}
+    if(dy)requestAndroidAmbientFrame();
   },{passive:true});
-  document.documentElement.addEventListener('mouseleave',()=>{pointer.active=false;});
+  document.documentElement.addEventListener('mouseleave',()=>{pointer.active=false;requestAndroidAmbientFrame();});
 
   function updateAmbient(dt,t){
     pointer.speed*=Math.pow(.88,dt);
@@ -693,6 +703,7 @@
     ambientScrollForce*=Math.pow(.86,dt);
     const motionSpeed=pointer.speed+Math.abs(ambientScrollForce)*.55;
     const radius=165+motionSpeed*2.8;
+    ambientMotion=0;
     for(const p of ambientParts){
       const homeX=p.hx+Math.sin(t*.00026*p.drift+p.phase)*18;
       const homeY=p.hy+Math.cos(t*.00021*p.drift+p.phase)*13;
@@ -722,6 +733,7 @@
       }
       const damping=Math.pow(.934,dt);
       p.vx*=damping;p.vy*=damping;p.x+=p.vx*dt;p.y+=p.vy*dt;
+      ambientMotion=Math.max(ambientMotion,Math.abs(p.vx)+Math.abs(p.vy));
     }
     ambientPulses.forEach(w=>{w.r+=7.5*dt;w.life-=.022*dt;});
     ambientPulses=ambientPulses.filter(w=>w.life>0);
@@ -729,7 +741,7 @@
 
   function drawAmbient(t){
     ambientCtx.clearRect(0,0,ambientW,ambientH);
-    if(isChromeDesktop&&ambientStaticLayer){
+    if(isChromePerformanceProfile&&ambientStaticLayer){
       ambientCtx.drawImage(ambientStaticLayer,0,0,ambientW,ambientH);
     }else{
       ambientCtx.globalCompositeOperation='multiply';
@@ -768,14 +780,27 @@
     ambientCtx.globalCompositeOperation='source-over';
   }
 
+  function hasAndroidAmbientWork(){
+    return ambientPulses.length>0||pointer.speed>.08||Math.abs(ambientScrollForce)>.08||ambientMotion>.045;
+  }
+  function requestAndroidAmbientFrame(){
+    if(!isAndroidPerformanceProfile||reduce||ambientRaf)return;
+    ambientRaf=requestAnimationFrame(ambientLoop);
+  }
   function ambientLoop(t){
+    ambientRaf=null;
+    if(isAndroidPerformanceProfile&&t-ambientLastDrawT<1000/30){
+      ambientRaf=requestAnimationFrame(ambientLoop);
+      return;
+    }
     const dt=Math.min(2.2,(t-ambientLastT)/16.67||1);ambientLastT=t;
-    updateAmbient(dt,t);drawAmbient(t);requestAnimationFrame(ambientLoop);
+    updateAmbient(dt,t);drawAmbient(t);ambientLastDrawT=t;
+    if(!isAndroidPerformanceProfile||hasAndroidAmbientWork())ambientRaf=requestAnimationFrame(ambientLoop);
   }
   buildAmbient();
-  if(reduce){drawAmbient(0);}else{requestAnimationFrame(ambientLoop);}
+  if(reduce||isAndroidPerformanceProfile){drawAmbient(0);}else{ambientRaf=requestAnimationFrame(ambientLoop);}
   let ambientResizeT;
-  window.addEventListener('resize',()=>{clearTimeout(ambientResizeT);ambientResizeT=setTimeout(()=>{buildAmbient();if(reduce)drawAmbient(0);},180);});
+  window.addEventListener('resize',()=>{clearTimeout(ambientResizeT);ambientResizeT=setTimeout(()=>{buildAmbient();if(reduce||isAndroidPerformanceProfile)drawAmbient(0);},180);});
 
   /* ---------- blue depth colormap (bathymetric) ---------- */
   const STOPS=[[238,245,253],[186,214,247],[108,166,238],[45,109,213],[17,62,142],[10,42,107]];
@@ -792,7 +817,7 @@
   const canvas=document.getElementById('field');
   const ctx=canvas.getContext('2d');
   const rReach=document.getElementById('rReach'),rCpm=document.getElementById('rCpm'),rGrad=document.getElementById('rGrad');
-  let W,H,dpr,fieldImg,maxF,fmin,raf=null;
+  let W,H,dpr,fieldImg,maxF,fmin,raf=null,lastReadoutT=0;
   // landscape: rotated bowl (dominant) + Gaussian "hills" the paths weave around
   const cx=0.10, cy=-0.02;
   const ang=Math.PI*0.16, k1=5.6, k2=1.05;
@@ -813,11 +838,14 @@
   function grad(u,v){const e=1e-3;return [ (f(u+e,v)-f(u-e,v))/(2*e), (f(u,v+e)-f(u,v-e))/(2*e) ];}
 
   function sizeCanvas(){
-    dpr=Math.min(window.devicePixelRatio||1,2);
+    const nextDpr=Math.min(window.devicePixelRatio||1,isAndroidPerformanceProfile?1:2);
     const r=canvas.getBoundingClientRect();
-    W=Math.max(1,Math.floor(r.width)); H=380;
+    const nextW=Math.max(1,Math.floor(r.width)),nextH=380;
+    if(nextW===W&&nextH===H&&nextDpr===dpr)return false;
+    dpr=nextDpr;W=nextW;H=nextH;
     canvas.width=W*dpr; canvas.height=H*dpr;
     ctx.setTransform(dpr,0,0,dpr,0,0);
+    return true;
   }
   function toXY(u,v){return [ (u+1)/2*W, (v+1)/2*H ];}
 
@@ -849,12 +877,13 @@
 
   /* ---- swarm of optimizers, continuous loop ---- */
   const TINTS=[[34,211,238],[30,111,242],[10,42,107]];   // cyan, blue, navy
+  const MAX_TRAIL_LENGTH=isAndroidPerformanceProfile?120:700;
   let parts=[], loopAlpha=1, phase='run', phaseT=0, pulse=0, dispLoss=1, dispGrad=0;
   let instrumentVisible=true,instrumentStarted=false;
 
-  function canRunInstrument(){return !isChromeDesktop||(!document.hidden&&instrumentVisible);}
+  function canRunInstrument(){return !isChromePerformanceProfile||(!document.hidden&&instrumentVisible);}
   function syncInstrumentLoop(){
-    if(!isChromeDesktop)return;
+    if(!isChromePerformanceProfile)return;
     if(canRunInstrument()){
       if(instrumentStarted&&!raf)loop();
     }else if(raf){
@@ -862,7 +891,7 @@
     }
   }
   function initChromeInstrumentLifecycle(){
-    if(!isChromeDesktop||reduce)return;
+    if(!isChromePerformanceProfile||reduce)return;
     const instrument=document.querySelector('.instrument');
     const observer=new IntersectionObserver(([entry])=>{
       instrumentVisible=entry.isIntersecting;syncInstrumentLoop();
@@ -899,7 +928,7 @@
       if(p.trail.length>1){
         ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
         ctx.strokeStyle=`rgba(${p.tint[0]},${p.tint[1]},${p.tint[2]},.55)`;
-        ctx.shadowColor=`rgba(${p.tint[0]},${p.tint[1]},${p.tint[2]},.8)`;ctx.shadowBlur=8;
+        if(!isAndroidPerformanceProfile){ctx.shadowColor=`rgba(${p.tint[0]},${p.tint[1]},${p.tint[2]},.8)`;ctx.shadowBlur=8;}
         ctx.beginPath();
         const [sx,sy]=toXY(p.trail[0][0],p.trail[0][1]);ctx.moveTo(sx,sy);
         for(let i=1;i<p.trail.length;i++){const[px,py]=toXY(p.trail[i][0],p.trail[i][1]);ctx.lineTo(px,py);}
@@ -919,16 +948,18 @@
     ctx.globalAlpha=1;
   }
 
-  function updateReadout(){
+  function updateReadout(t=0,force=false){
+    if(isAndroidPerformanceProfile&&!force&&t-lastReadoutT<250)return;
     const reach=(3+9.6*(1-Math.max(0,Math.min(1,dispLoss)))).toFixed(1);
     const cpm=Math.round(62+118*Math.max(0,Math.min(1,dispLoss)));
     rReach.textContent=reach+'M';
     rCpm.textContent=cpm+' ₽';
     rGrad.textContent=(phase!=='run'||dispGrad<0.16)?'≈0':(dispGrad<1?dispGrad.toFixed(3):dispGrad.toFixed(2));
     rCpm.classList.toggle('done', phase!=='run');
+    lastReadoutT=t;
   }
 
-  function loop(){
+  function loop(t=0){
     if(!canRunInstrument()){raf=null;return;}
     pulse+=0.06;
     if(phase==='run'){
@@ -938,7 +969,7 @@
           const g=grad(p.u,p.v);
           p.mu=p.mom*p.mu-p.lr*g[0];p.mv=p.mom*p.mv-p.lr*g[1];
           p.u+=p.mu;p.v+=p.mv;p.steps++;
-          p.trail.push([p.u,p.v]); if(p.trail.length>700)p.trail.shift();
+          p.trail.push([p.u,p.v]); if(p.trail.length>MAX_TRAIL_LENGTH)p.trail.shift();
           const lrel=(f(p.u,p.v)-fmin)/p.f0, gn=Math.hypot(g[0],g[1]);
           if(lrel<0.012 || gn<0.16 || p.steps>460)p.done=true;
         }
@@ -955,7 +986,7 @@
       phaseT++; loopAlpha=Math.max(0,1-phaseT/30);
       if(phaseT>30) spawn();
     }
-    updateReadout();
+    updateReadout(t);
     drawScene();
     raf=requestAnimationFrame(loop);
   }
@@ -967,19 +998,23 @@
   }
 
   function setupInstrument(){
-    sizeCanvas();renderField();
+    if(sizeCanvas()||!fieldImg)renderField();
     if(reduce){
       spawn();
       for(const p of parts){let s=0;while(!p.done&&s<460){const g=grad(p.u,p.v);p.mu=p.mom*p.mu-p.lr*g[0];p.mv=p.mom*p.mv-p.lr*g[1];p.u+=p.mu;p.v+=p.mv;p.trail.push([p.u,p.v]);if((f(p.u,p.v)-fmin)/p.f0<0.012||Math.hypot(g[0],g[1])<0.16)p.done=true;s++;}}
       loopAlpha=1;pulse=0;phase='hold';dispLoss=0;dispGrad=0;
-      drawScene();updateReadout();
+      drawScene();updateReadout(0,true);
     }else{
       drawScene();
     }
   }
 
-  let resizeT;
-  window.addEventListener('resize',()=>{clearTimeout(resizeT);resizeT=setTimeout(()=>{sizeCanvas();renderField();if(reduce)drawScene();},200);});
+  let resizeT,lastViewportWidth=window.innerWidth;
+  window.addEventListener('resize',()=>{
+    if(window.innerWidth===lastViewportWidth)return;
+    lastViewportWidth=window.innerWidth;
+    clearTimeout(resizeT);resizeT=setTimeout(()=>{if(sizeCanvas()){renderField();if(reduce)drawScene();}},200);
+  });
 
   /* ---------- sequential load orchestration ---------- */
   function launch(){
